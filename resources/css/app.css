@@ -9,3 +9,23 @@
     --font-sans: 'Instrument Sans', ui-sans-serif, system-ui, sans-serif, 'Apple Color Emoji', 'Segoe UI Emoji',
         'Segoe UI Symbol', 'Noto Color Emoji';
 }
+
+@layer components {
+
+    /* Dashboard Card */
+    .stat-card {
+        @apply bg-white p-6 rounded-lg shadow-sm transition-all;
+    }
+
+    .stat-card:hover {
+        @apply -translate-y-1 shadow-md;
+    }
+
+    .stat-label {
+        @apply text-sm text-gray-500;
+    }
+
+    .stat-value {
+        @apply text-4xl font-bold mt-2 text-gray-900;
+    }
+}

@@ -5,6 +5,7 @@ namespace Database\Seeders;
 use App\Models\Product;
 use App\Models\User;
 use Illuminate\Database\Seeder;
+use Illuminate\Support\Facades\Hash;
 
 class DatabaseSeeder extends Seeder
 {
@@ -22,6 +23,20 @@ class DatabaseSeeder extends Seeder
         $this->command->info('✅ Admin user created: admin@example.com');
 
         User::factory(10)->create([
+            'role' => 'customer',
+        ]);
+        // Di dalam method run()
+        User::create([
+            'name' => 'Admin',
+            'email' => 'admin@tokoonline.com',
+            'password' => Hash::make('password'),
+            'role' => 'admin',
+        ]);
+
+        User::create([
+            'name' => 'Customer',
+            'email' => 'customer@tokoonline.com',
+            'password' => Hash::make('password'),
             'role' => 'customer',
         ]);
 
