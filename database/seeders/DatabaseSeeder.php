@@ -13,34 +13,48 @@ class DatabaseSeeder extends Seeder
     {
         $this->command->info('🌱 Starting database seeding...');
 
-        User::factory()->create([
-            'name' => 'Administrator',
-            'email' => 'admin@example.com',
-            'role' => 'admin',
-            'email_verified_at' => now(),
-        ]);
+        $admin = User::firstOrCreate(
+            ['email' => 'admin@example.com'],
+            [
+                'name' => 'Administrator',
+                'role' => 'admin',
+                'email_verified_at' => now(),
+                'password' => Hash::make('password'),
+            ]
+        );
 
-        $this->command->info('✅ Admin user created: admin@example.com');
+        if ($admin->wasRecentlyCreated) {
+            $this->command->info('✅ Admin user created: admin@example.com');
+        } else {
+            $this->command->info('ℹ️ Admin user already exists: admin@example.com');
+        }
 
-        User::factory(10)->create([
-            'role' => 'customer',
-        ]);
-        // Di dalam method run()
-        User::create([
-            'name' => 'Admin',
+        $existingCustomers = User::where('role', 'customer')->count();
+        if ($existingCustomers < 10) {
+            User::factory(10 - $existingCustomers)->create([
+                'role' => 'customer',
+            ]);
+            $this->command->info('✅ Customer users seeded (ensured 10 total)');
+        } else {
+            $this->command->info('ℹ️ Customer users already present');
+        }
+
+        // Ensure these specific accounts exist without duplicating
+        User::firstOrCreate([
             'email' => 'admin@tokoonline.com',
+        ], [
+            'name' => 'Admin',
             'password' => Hash::make('password'),
             'role' => 'admin',
         ]);
 
-        User::create([
-            'name' => 'Customer',
+        User::firstOrCreate([
             'email' => 'customer@tokoonline.com',
+        ], [
+            'name' => 'Customer',
             'password' => Hash::make('password'),
             'role' => 'customer',
         ]);
-
-        $this->command->info('✅ 10 customer users created');
 
         $this->call(CategorySeeder::class);
 

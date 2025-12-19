@@ -1,131 +1,218 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="id">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="csrf-token" content="{{ csrf_token() }}">
 
-    <title>@yield('title', 'TokoBersatu - Your Online Store')</title>
+    <title>@yield('title', 'TokoIqbaal') - {{ config('app.name') }}</title>
+    <meta name="description" content="@yield('meta_description', 'Toko online terpercaya dengan produk berkualitas')">
+
+    <!-- Fonts & Icons -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" rel="stylesheet">
 
     @vite(['resources/css/app.css', 'resources/js/app.js'])
-    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
+    @stack('styles')
 </head>
-<body class="bg-white text-gray-900 antialiased">
 
-    <div class="min-h-screen flex flex-col">
+<body class="font-['Inter'] bg-slate-100 text-slate-800 antialiased">
 
-        <!-- NAVBAR -->
-        <header class="sticky top-0 z-50 bg-white shadow-sm border-b border-gray-100">
-            <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-                <div class="flex justify-between items-center h-16">
+<div class="min-h-screen flex flex-col">
+
+    <!-- TOP BAR -->
+    <div class="bg-gradient-to-r from-blue-600 to-indigo-600 text-white text-sm py-1.5 text-center font-medium">
+        🛍️ Selamat datang di <b>TokoIqbaal</b> — Belanja aman & terpercaya
+    </div>
+
+    <!-- NAVBAR -->
+    <header class="sticky top-0 z-50">
+        <div class="bg-white/90 backdrop-blur-xl border-b border-slate-200">
+            <div class="max-w-7xl mx-auto px-4">
+                <div class="flex items-center justify-between h-14">
+
                     <!-- Logo -->
-                    <a href="/" class="flex items-center gap-2">
-                        <div class="w-8 h-8 bg-gradient-to-br from-blue-600 to-blue-800 rounded-lg flex items-center justify-center">
-                            <span class="text-white font-bold text-lg">T</span>
+                    <a href="/" class="flex items-center gap-3">
+                        <div class="w-9 h-9 bg-gradient-to-br from-blue-600 to-indigo-600
+                                    rounded-xl flex items-center justify-center
+                                    text-white font-extrabold shadow">
+                            T
                         </div>
-                        <span class="font-bold text-lg text-gray-900 hidden sm:inline">TokoBersatu</span>
+                        <span class="text-lg font-extrabold">
+                            Toko<span class="text-blue-600">Iqbaal</span>
+                        </span>
                     </a>
 
-                    <!-- Search Bar -->
-                    <div class="hidden md:flex flex-1 max-w-md mx-8">
-                        <div class="w-full relative">
-                            <input type="text" placeholder="Cari produk..." 
-                                class="w-full px-4 py-2 rounded-lg border border-gray-300 focus:outline-none focus:border-blue-500 focus:ring-1 focus:ring-blue-500">
-                            <button class="absolute right-3 top-1/2 -translate-y-1/2 text-gray-400 hover:text-gray-600">
-                                <i class="fas fa-search"></i>
-                            </button>
+                    <!-- Search -->
+                    <div class="hidden md:block w-full max-w-sm mx-8">
+                        <div class="relative">
+                            <input type="text"
+                                   placeholder="Cari produk..."
+                                   class="w-full rounded-lg border border-slate-300
+                                          px-4 py-2 text-sm focus:ring-2 focus:ring-blue-500
+                                          focus:border-blue-500 outline-none">
+                            <i class="fas fa-search absolute right-3 top-1/2 -translate-y-1/2 text-slate-400"></i>
                         </div>
                     </div>
 
-                    <!-- Navigation Links -->
-                    <nav class="hidden lg:flex items-center gap-6">
-                        <a href="/" class="text-gray-600 hover:text-blue-600 font-medium transition">Beranda</a>
-                        <a href="/kategori" class="text-gray-600 hover:text-blue-600 font-medium transition">Kategori</a>
-                        <a href="/tentang" class="text-gray-600 hover:text-blue-600 font-medium transition">Tentang</a>
+                    <!-- Menu -->
+                    <nav class="hidden lg:flex items-center gap-8 text-sm font-semibold">
+                        <a href="/" class="hover:text-blue-600 transition">Beranda</a>
+                        <a href="{{ route('catalog.index') }}" class="hover:text-blue-600 transition">Katalog</a>
+                        <a href="#tentang" class="hover:text-blue-600 transition">Tentang</a>
                     </nav>
 
-                    <!-- Right Actions -->
-                    <div class="flex items-center gap-4">
-                        <button class="relative p-2 text-gray-600 hover:text-blue-600 transition">
-                            <i class="fas fa-heart text-lg"></i>
-                            <span class="absolute top-1 right-1 w-4 h-4 bg-red-500 text-white text-xs rounded-full flex items-center justify-center">0</span>
-                        </button>
-                        <button class="relative p-2 text-gray-600 hover:text-blue-600 transition">
-                            <i class="fas fa-shopping-cart text-lg"></i>
-                            <span class="absolute top-1 right-1 w-4 h-4 bg-blue-600 text-white text-xs rounded-full flex items-center justify-center">0</span>
-                        </button>
+                    <!-- Actions -->
+                    <div class="flex items-center gap-3">
+
+                        @auth
+                            <!-- Wishlist -->
+                            <a href="{{ route('wishlist.index') }}"
+                               class="relative p-2 hover:text-red-500 transition">
+                                <i class="fas fa-heart"></i>
+                                <span class="absolute -top-1 -right-1 w-4 h-4
+                                             bg-red-500 text-white text-xs
+                                             rounded-full flex items-center justify-center">
+                                    {{ auth()->user()->wishlist()->count() }}
+                                </span>
+                            </a>
+
+                            <!-- Cart -->
+                            <a href="{{ route('cart.index') }}"
+                               class="relative p-2 hover:text-blue-600 transition">
+                                <i class="fas fa-shopping-cart"></i>
+                                <span class="absolute -top-1 -right-1 w-4 h-4
+                                             bg-blue-600 text-white text-xs
+                                             rounded-full flex items-center justify-center">
+                                    {{ auth()->user()->cart ? auth()->user()->cart->items()->count() : 0 }}
+                                </span>
+                            </a>
+                        @endauth
 
                         @guest
-                            <a href="{{ route('login') }}" class="px-4 py-2 text-gray-700 hover:text-blue-600 font-medium transition">Login</a>
-                            <a href="{{ route('register') }}" class="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 font-medium transition">Register</a>
+                            <a href="{{ route('login') }}" class="text-sm font-medium hover:text-blue-600">
+                                Masuk
+                            </a>
+                            <a href="{{ route('register') }}"
+                               class="px-4 py-2 text-sm font-semibold rounded-lg
+                                      bg-blue-600 text-white hover:bg-blue-700 transition">
+                                Daftar
+                            </a>
                         @else
+                            <!-- User Menu -->
                             <div class="relative group">
-                                <button class="p-2 text-gray-600 hover:text-blue-600">
-                                    <i class="fas fa-user-circle text-2xl"></i>
+                                <button class="p-2 hover:text-blue-600">
+                                    <i class="fas fa-user-circle text-xl"></i>
                                 </button>
-                                <div class="absolute right-0 mt-2 w-48 bg-white rounded-lg shadow-lg opacity-0 invisible group-hover:opacity-100 group-hover:visible transition">
-                                    <a href="{{ route('home') }}" class="block px-4 py-2 text-gray-700 hover:bg-blue-50">Dashboard</a>
-                                    <form method="POST" action="{{ route('logout') }}" class="block">
+                                <div class="absolute right-0 mt-2 w-48 bg-white rounded-lg shadow-lg
+                                            opacity-0 invisible group-hover:opacity-100
+                                            group-hover:visible transition border">
+                                    <a href="{{ route('home') }}"
+                                       class="block px-4 py-2 hover:bg-blue-50">Dashboard</a>
+                                    <form method="POST" action="{{ route('logout') }}">
                                         @csrf
-                                        <button type="submit" class="w-full text-left px-4 py-2 text-gray-700 hover:bg-blue-50">Logout</button>
+                                        <button class="w-full text-left px-4 py-2 hover:bg-blue-50">
+                                            Keluar
+                                        </button>
                                     </form>
                                 </div>
                             </div>
                         @endguest
-                    </div>
 
-                    <!-- Mobile Menu Button -->
-                    <button class="lg:hidden p-2 text-gray-600">
-                        <i class="fas fa-bars text-xl"></i>
-                    </button>
+                        <!-- Mobile -->
+                        <button class="lg:hidden p-2">
+                            <i class="fas fa-bars text-lg"></i>
+                        </button>
+
+                    </div>
                 </div>
             </div>
-        </header>
+        </div>
+    </header>
 
-        <!-- CONTENT -->
-        <main class="flex-1">
-            @yield('content')
-        </main>
-
-        <!-- FOOTER -->
-        <footer class="bg-gray-900 text-gray-300 mt-16">
-            <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
-                <div class="grid grid-cols-1 md:grid-cols-4 gap-8 mb-8">
-                    <div>
-                        <h3 class="text-white font-bold mb-4">TokoBersatu</h3>
-                        <p class="text-sm">Toko online terpercaya dengan ribuan produk pilihan untuk kebutuhan Anda.</p>
-                    </div>
-                    <div>
-                        <h4 class="text-white font-bold mb-4">Kategori</h4>
-                        <ul class="space-y-2 text-sm">
-                            <li><a href="#" class="hover:text-white transition">Elektronik</a></li>
-                            <li><a href="#" class="hover:text-white transition">Fashion</a></li>
-                            <li><a href="#" class="hover:text-white transition">Rumah & Hidup</a></li>
-                        </ul>
-                    </div>
-                    <div>
-                        <h4 class="text-white font-bold mb-4">Perusahaan</h4>
-                        <ul class="space-y-2 text-sm">
-                            <li><a href="/tentang" class="hover:text-white transition">Tentang Kami</a></li>
-                            <li><a href="#" class="hover:text-white transition">Kebijakan Privasi</a></li>
-                            <li><a href="#" class="hover:text-white transition">Syarat Layanan</a></li>
-                        </ul>
-                    </div>
-                    <div>
-                        <h4 class="text-white font-bold mb-4">Hubungi Kami</h4>
-                        <ul class="space-y-2 text-sm">
-                            <li><a href="mailto:info@tokobersatu.com" class="hover:text-white transition">Email: info@tokobersatu.com</a></li>
-                            <li><a href="tel:+62123456789" class="hover:text-white transition">Telp: +62 123 456 789</a></li>
-                        </ul>
-                    </div>
-                </div>
-                <div class="border-t border-gray-800 pt-8 text-sm text-center">
-                    <p>&copy; 2025 TokoBersatu. All rights reserved.</p>
-                </div>
+    <!-- ERROR -->
+    @if ($errors->any())
+        <div class="max-w-7xl mx-auto px-4 mt-4">
+            <div class="bg-red-50 border border-red-200 text-red-700 rounded-lg px-4 py-3 text-sm">
+                <ul class="list-disc list-inside">
+                    @foreach ($errors->all() as $error)
+                        <li>{{ $error }}</li>
+                    @endforeach
+                </ul>
             </div>
-        </footer>
+        </div>
+    @endif
 
-    </div>
+    <!-- CONTENT -->
+    <main class="flex-1 py-6">
+        @yield('content')
+    </main>
+
+    <!-- FOOTER -->
+    <footer class="bg-slate-900 text-slate-300">
+        <div class="max-w-7xl mx-auto px-4 py-10 grid grid-cols-1 md:grid-cols-4 gap-8 text-sm">
+
+            <div>
+                <h3 class="text-white font-bold text-lg mb-2">TokoIqbaal</h3>
+                <p class="text-slate-400">
+                    Toko online terpercaya dengan produk pilihan terbaik.
+                </p>
+            </div>
+
+            <div>
+                <h4 class="text-white font-semibold mb-2">Kategori</h4>
+                <ul class="space-y-1">
+                    <li>Elektronik</li>
+                    <li>Fashion</li>
+                    <li>Rumah & Hidup</li>
+                </ul>
+            </div>
+
+            <div>
+                <h4 class="text-white font-semibold mb-2">Perusahaan</h4>
+                <ul class="space-y-1">
+                    <li>Tentang Kami</li>
+                    <li>Kebijakan Privasi</li>
+                    <li>Syarat Layanan</li>
+                </ul>
+            </div>
+
+            <div>
+                <h4 class="text-white font-semibold mb-2">Kontak</h4>
+                <p class="text-slate-400">
+                    info@tokoiqbaal.com<br>
+                    +62 812 xxxx xxxx
+                </p>
+            </div>
+
+        </div>
+
+        <div class="border-t border-slate-800 text-center text-xs py-4">
+            © {{ date('Y') }} TokoIqbaal. All rights reserved.
+        </div>
+    </footer>
+
+</div>
+@stack('scripts')
+<script>
+function addToCart(productId) {
+    fetch(`/cart/add/${productId}`, {
+        method: "POST",
+        headers: {
+            "X-CSRF-TOKEN": document.querySelector('meta[name="csrf-token"]').content
+        }
+    })
+    .then(() => {
+        alert('Produk berhasil ditambahkan ke keranjang');
+        location.reload();
+    })
+    .catch(() => {
+        alert('Terjadi kesalahan');
+    });
+}
+</script>
+
 
 </body>
 </html>
-

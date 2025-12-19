@@ -1,6 +1,6 @@
 @extends('layouts.app')
 
-@section('title', 'Login - TokoBersatu')
+@section('title', 'Login - TokoIqbaal')
 
 @section('content')
 <div class="min-h-[calc(100vh-200px)] flex items-center justify-center px-4 py-12">

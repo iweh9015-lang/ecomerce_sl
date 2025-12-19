@@ -5,12 +5,10 @@ import tailwindcss from '@tailwindcss/vite';
 export default defineConfig({
     plugins: [
         laravel({
-            input: [
-                'resources/sass/app.scss',
-                'resources/js/app.js',
-            ],
-            refresh: true,
+            input: ["resources/css/app.css", "resources/js/app.js"],
+            refresh: true, // Hot Module Replacement (HMR): Auto-refresh browser saat file .blade.php berubah
         }),
         tailwindcss(),
+      
     ],
 });
