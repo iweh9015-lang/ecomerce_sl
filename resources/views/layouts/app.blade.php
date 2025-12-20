@@ -37,7 +37,7 @@
                         <div class="w-9 h-9 bg-gradient-to-br from-blue-600 to-indigo-600
                                     rounded-xl flex items-center justify-center
                                     text-white font-extrabold shadow">
-                            T
+                            TI
                         </div>
                         <span class="text-lg font-extrabold">
                             Toko<span class="text-blue-600">Iqbaal</span>
@@ -61,6 +61,7 @@
                         <a href="/" class="hover:text-blue-600 transition">Beranda</a>
                         <a href="{{ route('catalog.index') }}" class="hover:text-blue-600 transition">Katalog</a>
                         <a href="#tentang" class="hover:text-blue-600 transition">Tentang</a>
+                        <a href="{{ route('admin.dashboard') }}" class="hover:text-blue-600 transition">Panel admin</a>
                     </nav>
 
                     <!-- Actions -->

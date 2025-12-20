@@ -65,58 +65,62 @@ Route::get('/catalog/{product:slug}', [CatalogController::class, 'show'])
 |--------------------------------------------------------------------------
 */
 
+// routes/web.php
+
 Route::middleware('auth')->group(function () {
-    // Profile
-    Route::get('/profile', [ProfileController::class, 'index'])->name('profile.index');
-    Route::get('/profile/edit', [ProfileController::class, 'edit'])->name('profile.edit');
-    Route::put('/profile', [ProfileController::class, 'update'])->name('profile.update');
-
-    /*
-    |--------------------------------------------------------------------------
-    | CART (FIX TANPA PARAM WAJIB DI ROUTE)
-    |--------------------------------------------------------------------------
-    */
-
-    Route::get('/cart', [CartController::class, 'index'])->name('cart.index');
-    Route::post('/cart/add/{product}', [CartController::class, 'add'])->name('cart.add')->middleware('auth');
-    Route::post('/cart/update', [CartController::class, 'update'])->name('cart.update');
-    Route::delete('/cart/{id}', [CartController::class, 'destroy']);
-
-    /*
-    |--------------------------------------------------------------------------
-    | WISHLIST
-    |--------------------------------------------------------------------------
-    */
-
-    Route::get('/wishlist', [WishlistController::class, 'index'])->name('wishlist.index');
-    Route::post('/wishlist/toggle/{product}', [WishlistController::class, 'toggle'])->name('wishlist.toggle');
-
-    /*
-    |--------------------------------------------------------------------------
-    | CHECKOUT & ORDER
-    |--------------------------------------------------------------------------
-    */
-
-    Route::get('/checkout', [CheckoutController::class, 'index'])->name('checkout.index');
-    Route::post('/checkout', [CheckoutController::class, 'store'])->name('checkout.store');
-
-    Route::get('/orders', [OrderController::class, 'index'])->name('orders.index');
-    Route::get('/orders/{order}', [OrderController::class, 'show'])->name('orders.show');
-
-    /*
-    |--------------------------------------------------------------------------
-    | KATEGORI
-    |--------------------------------------------------------------------------
-    */
-
-    Route::get('/categories/{category:slug}', function (Category $category) {
-        $products = $category->products()
-            ->where('is_active', true)
-            ->paginate(12);
-
-        return view('categories.show', compact('category', 'products'));
-    })->name('categories.show');
+    Route::get('/profile', [ProfileController::class, 'edit'])->name('profile.edit');
+    Route::patch('/profile', [ProfileController::class, 'update'])->name('profile.update');
+    Route::delete('/profile', [ProfileController::class, 'destroy'])->name('profile.destroy');
+    Route::delete('/profile/avatar', [ProfileController::class, 'deleteAvatar'])->name('profile.avatar.destroy');
+    Route::put('/profile/password', [ProfileController::class, 'updatePassword'])->name('profile.password.update');
 });
+/*
+|--------------------------------------------------------------------------
+| CART (FIX TANPA PARAM WAJIB DI ROUTE)
+|--------------------------------------------------------------------------
+*/
+
+Route::get('/cart', [CartController::class, 'index'])->name('cart.index');
+Route::post('/cart/add/{product}', [CartController::class, 'add'])->name('cart.add')->middleware('auth');
+Route::post('/cart/update', [CartController::class, 'update'])->name('cart.update');
+Route::delete('/cart/{id}', [CartController::class, 'destroy']);
+Route::delete('/cart/{id}', [CartController::class, 'remove'])
+    ->name('cart.remove');
+
+/*
+|--------------------------------------------------------------------------
+| WISHLIST
+|--------------------------------------------------------------------------
+*/
+
+Route::get('/wishlist', [WishlistController::class, 'index'])->name('wishlist.index');
+Route::post('/wishlist/toggle/{product}', [WishlistController::class, 'toggle'])->name('wishlist.toggle');
+
+/*
+|--------------------------------------------------------------------------
+| CHECKOUT & ORDER
+|--------------------------------------------------------------------------
+*/
+
+Route::get('/checkout', [CheckoutController::class, 'index'])->name('checkout.index');
+Route::post('/checkout', [CheckoutController::class, 'store'])->name('checkout.store');
+
+Route::get('/orders', [OrderController::class, 'index'])->name('orders.index');
+Route::get('/orders/{order}', [OrderController::class, 'show'])->name('orders.show');
+
+/*
+|--------------------------------------------------------------------------
+| KATEGORI
+|--------------------------------------------------------------------------
+*/
+
+Route::get('/categories/{category:slug}', function (Category $category) {
+    $products = $category->products()
+        ->where('is_active', true)
+        ->paginate(12);
+
+    return view('category.show', compact('category', 'products'));
+})->name('categories.show');
 
 /*
 |--------------------------------------------------------------------------
@@ -128,11 +132,11 @@ Route::middleware(['auth', 'admin'])
     ->prefix('admin')
     ->name('admin.')
     ->group(function () {
-        Route::get('/dashboard', [DashboardController::class, 'index'])
+        Route::get('/dashboard', [DashboardController::class, 'dashboard'])
             ->name('dashboard');
+        Route::resource('products', AdminCategoryController::class);
 
         Route::resource('categories', AdminCategoryController::class);
-
         Route::get('/orders', [AdminOrderController::class, 'index'])
             ->name('orders.index');
 
@@ -142,3 +146,7 @@ Route::middleware(['auth', 'admin'])
         Route::patch('/orders/{order}/status', [AdminOrderController::class, 'updateStatus'])
             ->name('orders.updateStatus');
     });
+//  wishlist
+
+Route::post('/wishlist/{id}', [WishlistController::class, 'toggle'])
+    ->name('wishlist.toggle');

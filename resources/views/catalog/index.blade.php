@@ -4,12 +4,19 @@
 
 @section('content')
 
-<div class="bg-white border-b">
-    <div class="max-w-7xl mx-auto px-4 py-4">
-        <nav class="text-sm text-gray-500">
-            <a href="{{ route('home') }}" class="hover:text-blue-600">Beranda</a> /
-            <span class="text-gray-800 font-semibold">Katalog Produk</span>
+<div class="bg-white">
+    <div class="max-w-7xl mx-auto px-4 pt-12 pb-8">
+
+        <nav class="text-sm text-red-400 mb-3">
+            <a href="{{ route('home') }}" class="hover:text-blue-700">Beranda</a>
+            <span class="mx-1">›</span>
+            <span class="text-blue-700">Katalog</span>
         </nav>
+
+        <h1 class="text-2xl font-medium text-black-900 tracking-tight">
+            Katalog Produk
+        </h1>
+
     </div>
 </div>
 
@@ -66,15 +73,6 @@
                     <h3 class="text-xl font-bold">Produk tidak ditemukan</h3>
                 </div>
             @endif
-                <form action="{{ route('cart.add', $product->id) }}" method="POST">
-    @csrf
-    <button
-        type="submit"
-        class="mt-4 w-full bg-blue-600 text-white py-2 rounded-lg hover:bg-blue-700 transition">
-        Masukkan Keranjang
-    </button>
-</form>
-
         </main>
     </div>
 </div>

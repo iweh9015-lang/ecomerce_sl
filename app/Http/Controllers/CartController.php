@@ -43,14 +43,26 @@ class CartController extends Controller
         return back();
     }
 
-    public function remove(Product $product)
+    public function remove(Request $request, $id)
     {
-        $cart = auth()->user()->cart;
+        // Ambil cart dari session
+        $cart = session()->get('cart', []);
 
-        $cart->items()
-            ->where('product_id', $product->id)
-            ->delete();
+        // Jika item tidak ada, aman (tidak error)
+        if (!isset($cart[$id])) {
+            return redirect()
+                ->back()
+                ->with('warning', 'Item tidak ditemukan di cart.');
+        }
 
-        return back();
+        // Hapus item
+        unset($cart[$id]);
+
+        // Simpan kembali ke session
+        session()->put('cart', $cart);
+
+        return redirect()
+            ->back()
+            ->with('success', 'Item berhasil dihapus dari cart.');
     }
 }
