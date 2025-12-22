@@ -1,68 +1,70 @@
 <?php
 
+// app/Http/Controllers/CartController.php
+
 namespace App\Http\Controllers;
 
 use App\Models\Product;
+use App\Services\CartService;
 use Illuminate\Http\Request;
 
 class CartController extends Controller
 {
+    protected $cartService;
+
+    // Inject Service melalui Constructor
+    public function __construct(CartService $cartService)
+    {
+        $this->cartService = $cartService;
+    }
+
     public function index()
     {
-        $cart = auth()->user()->cart()->with('items.product')->first();
+        $cart = $this->cartService->getCart();
+        // Load produk dan gambar untuk ditampilkan
+        $cart->load(['items.product.primaryImage']);
 
         return view('cart.index', compact('cart'));
     }
 
-    public function add(Request $request, Product $product)
+    public function add(Request $request)
     {
-        $cart = auth()->user()->cart()->firstOrCreate([]);
+        $request->validate([
+            'product_id' => 'required|exists:products,id',
+            'quantity' => 'required|integer|min:1',
+        ]);
 
-        $item = $cart->items()->where('product_id', $product->id)->first();
+        try {
+            $product = Product::findOrFail($request->product_id);
+            $this->cartService->addProduct($product, $request->quantity);
 
-        if ($item) {
-            $item->increment('quantity');
-        } else {
-            $cart->items()->create([
-                'product_id' => $product->id,
-                'quantity' => 1,
-            ]);
+            return back()->with('success', 'Produk berhasil ditambahkan ke keranjang!');
+        } catch (\Exception $e) {
+            return back()->with('error', $e->getMessage());
         }
-
-        return back()->with('success', 'Produk berhasil dimasukkan ke keranjang');
     }
 
-    public function update(Request $request, Product $product)
+    public function update(Request $request, $itemId)
     {
-        $cart = auth()->user()->cart;
+        $request->validate(['quantity' => 'required|integer|min:0']);
 
-        $cart->items()
-            ->where('product_id', $product->id)
-            ->update(['quantity' => $request->quantity]);
+        try {
+            $this->cartService->updateQuantity($itemId, $request->quantity);
 
-        return back();
+            return back()->with('success', 'Keranjang diperbarui.');
+        } catch (\Exception $e) {
+            return back()->with('error', $e->getMessage());
+        }
     }
 
-    public function remove(Request $request, $id)
+    public function remove($itemId)
     {
-        // Ambil cart dari session
-        $cart = session()->get('cart', []);
+        try {
+            $this->cartService->removeItem($itemId);
 
-        // Jika item tidak ada, aman (tidak error)
-        if (!isset($cart[$id])) {
-            return redirect()
-                ->back()
-                ->with('warning', 'Item tidak ditemukan di cart.');
+            return back()->with('success', 'Item dihapus dari keranjang.');
+        } catch (\Exception $e) {
+            return back()->with('error', $e->getMessage());
         }
-
-        // Hapus item
-        unset($cart[$id]);
-
-        // Simpan kembali ke session
-        session()->put('cart', $cart);
-
-        return redirect()
-            ->back()
-            ->with('success', 'Item berhasil dihapus dari cart.');
     }
 }

@@ -9,38 +9,28 @@ return new class extends Migration {
     {
         Schema::create('orders', function (Blueprint $table) {
             $table->id();
+            $table->foreignId('user_id')->constrained();
+            $table->string('order_number')->unique(); // ID unik, misal ORD-20231201-001
 
-            $table->foreignId('user_id')
-                  ->constrained()
-                  ->cascadeOnDelete();
+            // Status Pesanan
+            $table->enum('status', ['pending', 'processing', 'completed', 'cancelled'])->default('pending');
 
-            $table->string('order_number', 50)->unique();
+            // Status Pembayaran (PENTING: tambahkan ini)
+            $table->enum('payment_status', ['unpaid', 'paid', 'failed'])->default('unpaid');
 
-            $table->decimal('total_amount', 15, 2);
+            // Informasi Pengiriman
+            $table->string('shipping_name');
+            $table->string('shipping_address');
+            $table->string('shipping_phone');
 
+            // Total & Biaya
+            $table->decimal('total_amount', 12, 2);
             $table->decimal('shipping_cost', 12, 2)->default(0);
 
-            $table->enum('status', [
-                'pending',
-                'processing',
-                'shipped',
-                'delivered',
-                'cancelled',
-            ])->default('pending');
-
-            $table->string('shipping_name');
-            $table->string('shipping_phone', 20);
-            $table->text('shipping_address');
-
-            $table->string('payment_method')->nullable();
-
-            $table->text('notes')->nullable();
+            // Midtrans Snap Token
+            $table->string('snap_token')->nullable();
 
             $table->timestamps();
-
-            $table->index('order_number');
-            $table->index('status');
-            $table->index('created_at');
         });
     }
 

@@ -12,7 +12,7 @@
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" rel="stylesheet">
-
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
     @vite(['resources/css/app.css', 'resources/js/app.js'])
     @stack('styles')
 </head>
@@ -197,21 +197,72 @@
 </div>
 @stack('scripts')
 <script>
-function addToCart(productId) {
-    fetch(`/cart/add/${productId}`, {
+  /**
+   * Fungsi AJAX untuk Toggle Wishlist
+   * Menggunakan Fetch API (Modern JS) daripada jQuery.
+   */
+  async function toggleWishlist(productId) {
+    try {
+      // 1. Ambil CSRF token dari meta tag HTML
+      // Laravale mewajibkan token ini untuk setiap request POST demi keamanan.
+      const token = document.querySelector('meta[name="csrf-token"]').content;
+
+      // 2. Kirim Request ke Server
+      const response = await fetch(`/wishlist/toggle/${productId}`, {
         method: "POST",
         headers: {
-            "X-CSRF-TOKEN": document.querySelector('meta[name="csrf-token"]').content
-        }
-    })
-    .then(() => {
-        alert('Produk berhasil ditambahkan ke keranjang');
-        location.reload();
-    })
-    .catch(() => {
-        alert('Terjadi kesalahan');
+          "Content-Type": "application/json",
+          "X-CSRF-TOKEN": token, // Tempel token di header
+        },
+      });
+
+      // 3. Handle jika user belum login (Error 401 Unauthorized)
+      if (response.status === 401) {
+        window.location.href = "/login"; // Lempar ke halaman login
+        return;
+      }
+
+      // 4. Baca respon JSON dari server
+      const data = await response.json();
+
+      if (data.status === "success") {
+        // 5. Update UI tanpa reload halaman
+        updateWishlistUI(productId, data.added); // Ganti warna ikon
+        updateWishlistCounter(data.count); // Update angka di header
+        showToast(data.message); // Tampilkan notifikasi
+      }
+    } catch (error) {
+      console.error("Error:", error);
+      showToast("Terjadi kesalahan sistem.", "error");
+    }
+  }
+
+  function updateWishlistUI(productId, isAdded) {
+    // Cari semua tombol wishlist untuk produk ini (bisa ada di card & detail page)
+    const buttons = document.querySelectorAll(`.wishlist-btn-${productId}`);
+
+    buttons.forEach((btn) => {
+      const icon = btn.querySelector("i"); // Menggunakan tag <i> untuk Bootstrap Icons
+      if (isAdded) {
+        // Ubah jadi merah solid (Love penuh)
+        icon.classList.remove("bi-heart", "text-secondary");
+        icon.classList.add("bi-heart-fill", "text-danger");
+      } else {
+        // Ubah jadi abu-abu outline (Love kosong)
+        icon.classList.remove("bi-heart-fill", "text-danger");
+        icon.classList.add("bi-heart", "text-secondary");
+      }
     });
-}
+  }
+
+  function updateWishlistCounter(count) {
+    const badge = document.getElementById("wishlist-count");
+    if (badge) {
+      badge.innerText = count;
+      // Bootstrap badge display toggle logic
+      badge.style.display = count > 0 ? "inline-block" : "none";
+    }
+  }
 </script>
 
 

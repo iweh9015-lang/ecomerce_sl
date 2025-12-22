@@ -1,90 +1,66 @@
-@extends('layouts.app')
+{{-- resources/views/admin/products/create.blade.php --}}
+@extends('layouts.admin')
 
 @section('title', 'Tambah Produk')
 
 @section('content')
-<div class="max-w-4xl mx-auto px-6 py-10">
+<div class="row justify-content-center">
+    <div class="col-lg-8">
+        <div class="d-flex justify-content-between align-items-center mb-4">
+            <h2 class="h3 mb-0 text-gray-800">Tambah Produk Baru</h2>
+            <a href="{{ route('admin.products.index') }}" class="btn btn-outline-secondary">
+                <i class="bi bi-arrow-left"></i> Kembali
+            </a>
+        </div>
 
-    <div class="flex items-center justify-between mb-8">
-        <h1 class="text-3xl font-bold">➕ Tambah Produk</h1>
+        <div class="card shadow-sm border-0">
+            <div class="card-body p-4">
+                <form action="{{ route('admin.products.store') }}" method="POST" enctype="multipart/form-data">
+                    @csrf
 
-        <a href="{{ route('admin.products.index') }}"
-           class="bg-gray-200 hover:bg-gray-300 text-gray-800 px-4 py-2 rounded-lg">
-            ⬅ Kembali
-        </a>
+                    {{-- Nama Produk --}}
+                    <div class="mb-3">
+                        <label class="form-label fw-bold">Nama Produk</label>
+                        <input type="text" name="name" class="form-control @error('name') is-invalid @enderror" value="{{ old('name') }}">
+                        @error('name') <div class="invalid-feedback">{{ $message }}</div> @enderror
+                    </div>
+
+                    {{-- Kategori Dropdown --}}
+                    <div class="mb-3">
+                        <label class="form-label fw-bold">Kategori</label>
+                        <select name="category_id" class="form-select @error('category_id') is-invalid @enderror">
+                            <option value="">Pilih Kategori...</option>
+                            @foreach($categories as $category)
+                                <option value="{{ $category->id }}" {{ old('category_id') == $category->id ? 'selected' : '' }}>
+                                    {{ $category->name }}
+                                </option>
+                            @endforeach
+                        </select>
+                         @error('category_id') <div class="invalid-feedback">{{ $message }}</div> @enderror
+                    </div>
+
+                    {{-- Harga & Stok --}}
+                    <div class="row">
+                        <div class="col-md-6 mb-3">
+                            <label class="form-label fw-bold">Harga (Rp)</label>
+                            <input type="number" name="price" class="form-control" value="{{ old('price') }}">
+                        </div>
+                        <div class="col-md-6 mb-3">
+                            <label class="form-label fw-bold">Stok</label>
+                            <input type="number" name="stock" class="form-control" value="{{ old('stock') }}">
+                        </div>
+                    </div>
+
+                    {{-- Gambar --}}
+                    <div class="mb-3">
+                        <label class="form-label fw-bold">Upload Gambar</label>
+                        <input type="file" name="images[]" multiple class="form-control">
+                    </div>
+
+                    <button type="submit" class="btn btn-primary btn-lg w-100">Simpan Produk</button>
+                </form>
+            </div>
+        </div>
     </div>
-
-    {{-- ERROR VALIDATION --}}
-    @if ($errors->any())
-        <div class="mb-6 bg-red-100 border border-red-400 text-red-700 p-4 rounded-lg">
-            <ul class="list-disc list-inside">
-                @foreach ($errors->all() as $error)
-                    <li>{{ $error }}</li>
-                @endforeach
-            </ul>
-        </div>
-    @endif
-
-    {{-- FORM --}}
-    <form action="{{ route('admin.products.store') }}" method="POST" enctype="multipart/form-data"
-          class="bg-white shadow rounded-xl p-6 space-y-6">
-        @csrf
-
-        {{-- Nama Produk --}}
-        <div>
-            <label class="block font-medium mb-2">Nama Produk</label>
-            <input type="text" name="name"
-                   value="{{ old('name') }}"
-                   class="w-full border rounded-lg px-4 py-2 focus:ring focus:ring-blue-200"
-                   placeholder="Masukkan nama produk" required>
-        </div>
-
-        {{-- Harga --}}
-        <div>
-            <label class="block font-medium mb-2">Harga</label>
-            <input type="number" name="price"
-                   value="{{ old('price') }}"
-                   class="w-full border rounded-lg px-4 py-2 focus:ring focus:ring-blue-200"
-                   placeholder="Masukkan harga" required>
-        </div>
-
-        {{-- Stok --}}
-        <div>
-            <label class="block font-medium mb-2">Stok</label>
-            <input type="number" name="stock"
-                   value="{{ old('stock') }}"
-                   class="w-full border rounded-lg px-4 py-2 focus:ring focus:ring-blue-200"
-                   placeholder="Jumlah stok" required>
-        </div>
-
-        {{-- Deskripsi --}}
-        <div>
-            <label class="block font-medium mb-2">Deskripsi</label>
-            <textarea name="description" rows="4"
-                      class="w-full border rounded-lg px-4 py-2 focus:ring focus:ring-blue-200"
-                      placeholder="Deskripsi produk">{{ old('description') }}</textarea>
-        </div>
-
-        {{-- Gambar --}}
-        <div>
-            <label class="block font-medium mb-2">Gambar Produk</label>
-            <input type="file" name="image"
-                   class="w-full border rounded-lg px-4 py-2">
-        </div>
-
-        {{-- BUTTON --}}
-        <div class="flex justify-end gap-3">
-            <button type="reset"
-                    class="px-5 py-2 rounded-lg bg-gray-200 hover:bg-gray-300">
-                Reset
-            </button>
-
-            <button type="submit"
-                    class="px-5 py-2 rounded-lg bg-blue-600 text-white hover:bg-blue-700">
-                Simpan Produk
-            </button>
-        </div>
-
-    </form>
 </div>
 @endsection

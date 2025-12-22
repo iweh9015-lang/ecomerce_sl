@@ -81,7 +81,7 @@ Route::middleware('auth')->group(function () {
 */
 
 Route::get('/cart', [CartController::class, 'index'])->name('cart.index');
-Route::post('/cart/add/{product}', [CartController::class, 'add'])->name('cart.add')->middleware('auth');
+Route::post('/cart/add', [CartController::class, 'add'])->name('cart.add');
 Route::post('/cart/update', [CartController::class, 'update'])->name('cart.update');
 Route::delete('/cart/{id}', [CartController::class, 'destroy']);
 Route::delete('/cart/{id}', [CartController::class, 'remove'])
@@ -150,3 +150,33 @@ Route::middleware(['auth', 'admin'])
 
 Route::post('/wishlist/{id}', [WishlistController::class, 'toggle'])
     ->name('wishlist.toggle');
+// crt
+// routes/web.php
+
+use App\Http\Controllers\Admin\CategoryController;
+use App\Http\Controllers\Admin\ProductController;
+
+Route::middleware(['auth', 'admin'])->prefix('admin')->name('admin.')->group(function () {
+    // Kategori
+    Route::resource('categories', CategoryController::class)->except(['show']); // Kategori biasanya tidak butuh show detail page
+
+    // Produk
+    Route::resource('products', ProductController::class);
+
+    // Route tambahan untuk AJAX Image Handling (jika diperlukan)
+    // ...
+});
+// catalog
+
+Route::get('/catalog', [CatalogController::class, 'index'])->name('catalog.index');
+Route::get('/product/{slug}', [CatalogController::class, 'show'])->name('catalog.show');
+
+Route::get('/catalog', [CatalogController::class, 'index'])->name('catalog.index');
+
+// Route model binding dengan slug
+Route::get('/catalog/{product:slug}', [CatalogController::class, 'show'])->name('catalog.show');
+// wishlist 2
+Route::middleware('auth')->group(function() {
+    Route::get('/wishlist', [WishlistController::class, 'index'])->name('wishlist.index');
+    Route::post('/wishlist/toggle/{product}', [WishlistController::class, 'toggle'])->name('wishlist.toggle');
+});

@@ -36,4 +36,8 @@ class CategoryController extends Controller
     {
         // implementasi hapus
     }
+
+    public function show($slug) // Cari produk berdasarkan slug atau ID $product = Product::where('slug', $slug)->firstOrFail(); // Load relasi gambar atau kategori jika perlu $product->load('primaryImage', 'category'); return view('catalog.show', compact('product')); }
+    {
+    }
 }

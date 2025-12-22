@@ -17,9 +17,9 @@
         </div>
 
         {{-- BUTTON ADD TO CART --}}
-        <button onclick="addToCart({{ $product->id }})"
-                class="mt-4 w-full bg-blue-600 text-white py-2 rounded-lg hover:bg-blue-700 transition">
-            Masukkan Keranjang
-        </button>
+       <button onclick="toggleWishlist({{ $product->id }})"
+        class="wishlist-btn-{{ $product->id }} btn btn-light btn-sm rounded-circle p-2 transition">
+    <i class="bi {{ Auth::check() && Auth::user()->hasInWishlist($product) ? 'bi-heart-fill text-danger' : 'bi-heart text-secondary' }} fs-5"></i>
+</button>
     </div>
 </div>

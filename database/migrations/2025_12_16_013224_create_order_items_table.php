@@ -9,19 +9,14 @@ return new class extends Migration {
     {
         Schema::create('order_items', function (Blueprint $table) {
             $table->id();
+            $table->foreignId('order_id')->constrained()->onDelete('cascade');
+            $table->foreignId('product_id')->constrained();
 
-            $table->foreignId('order_id')
-                  ->constrained()
-                  ->cascadeOnDelete();
-
-            $table->foreignId('product_id')
-                  ->constrained()
-                  ->restrictOnDelete();
-
-            $table->string('product_name');
-            $table->decimal('price', 12, 2);
+            // PENTING: Snapshot data produk saat transaksi
+            $table->string('product_name'); // Simpan nama kalau-kalau produk dihapus/diubah
             $table->integer('quantity');
-            $table->decimal('subtotal', 15, 2);
+            $table->decimal('price', 12, 2); // Simpan harga SAAT transaksi, bukan relasi ke harga produk sekarang
+            $table->decimal('subtotal', 12, 2); // quantity * price
 
             $table->timestamps();
         });
