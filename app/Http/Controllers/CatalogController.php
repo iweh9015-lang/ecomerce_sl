@@ -2,29 +2,32 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\Category;
 use App\Models\Product;
+use Illuminate\Http\Request;
 
 class CatalogController extends Controller
 {
-    /**
-     * Menampilkan semua produk (halaman katalog).
-     */
-    public function index()
+    public function index(Request $request)
     {
-        // Ambil semua produk dengan relasi gambar utama
-        $products = Product::with('primaryImage')->paginate(12);
+        $query = Product::with('category')
+            ->where('is_active', 1)
+            ->where('stock', '>', 0);
 
-        return view('catalog.index', compact('products'));
-    }
+        // FILTER KATEGORI
+        if ($request->filled('category')) {
+            $query->where('category_id', $request->category);
+        }
 
-    /**
-     * Menampilkan detail produk berdasarkan slug atau id.
-     */
-    public function show(Product $product)
-    {
-        // Pastikan relasi gambar dan kategori ikut dimuat
-        $product->load(['primaryImage', 'category']);
+        // SEARCH NAMA PRODUK
+        if ($request->filled('search')) {
+            $query->where('name', 'like', '%'.$request->search.'%');
+        }
 
-        return view('catalog.show', compact('product'));
+        $products = $query->latest()->paginate(12)->withQueryString();
+
+        $categories = Category::orderBy('name')->get();
+
+        return view('catalog.index', compact('products', 'categories'));
     }
 }

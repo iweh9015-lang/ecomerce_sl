@@ -2,54 +2,21 @@
 
 namespace App\Models;
 
-use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
-use Illuminate\Support\Str;
 
 class Category extends Model
 {
-    use HasFactory;
-
-    protected $fillable = [
-        'name',
-        'slug',
-        'description',
-        'image',
-        'is_active',
-    ];
-
-    protected $casts = [
-        'is_active' => 'boolean',
-    ];
-
-    /*
-    |--------------------------------------------------------------------------
-    | BOOT
-    |--------------------------------------------------------------------------
-    */
-    protected static function boot()
+    /* =======================
+     | SCOPES
+     ======================= */
+    public function scopeActive($query)
     {
-        parent::boot();
-
-        static::creating(function ($category) {
-            if (empty($category->slug)) {
-                $category->slug = Str::slug($category->name);
-            }
-        });
-
-        static::updating(function ($category) {
-            if ($category->isDirty('name')) {
-                $category->slug = Str::slug($category->name);
-            }
-        });
+        return $query->where('is_active', true);
     }
 
-    /*
-    |--------------------------------------------------------------------------
-    | RELATIONSHIP
-    |--------------------------------------------------------------------------
-    */
-
+    /* =======================
+     | RELATIONS
+     ======================= */
     public function products()
     {
         return $this->hasMany(Product::class);
@@ -60,42 +27,5 @@ class Category extends Model
         return $this->hasMany(Product::class)
             ->where('is_active', true)
             ->where('stock', '>', 0);
-    }
-
-    /*
-    |--------------------------------------------------------------------------
-    | SCOPES
-    |--------------------------------------------------------------------------
-    */
-
-    public function scopeActive($query)
-    {
-        return $query->where('is_active', true);
-    }
-
-    /*
-    |--------------------------------------------------------------------------
-    | ACCESSORS
-    |--------------------------------------------------------------------------
-    */
-
-    public function getImageUrlAttribute(): string
-    {
-        if ($this->image) {
-            return asset('storage/'.$this->image);
-        }
-
-        return asset('images/category-placeholder.png');
-    }
-
-    /*
-    |--------------------------------------------------------------------------
-    | ROUTE KEY (slug)
-    |--------------------------------------------------------------------------
-    */
-
-    public function getRouteKeyName()
-    {
-        return 'slug';
     }
 }

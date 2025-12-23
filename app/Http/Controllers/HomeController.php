@@ -1,5 +1,10 @@
 <?php
 
+// ================================================
+// FILE: app/Http/Controllers/HomeController.php
+// FUNGSI: Menangani halaman utama website
+// ================================================
+
 namespace App\Http\Controllers;
 
 use App\Models\Category;
@@ -7,42 +12,67 @@ use App\Models\Product;
 
 class HomeController extends Controller
 {
+    /**
+     * Menampilkan halaman beranda.
+     *
+     * Halaman ini menampilkan:
+     * - Hero section (static)
+     * - Kategori populer
+     * - Produk unggulan (featured)
+     * - Produk terbaru
+     */
     public function index()
     {
-        $categories = Category::query()
-            ->active()
-            ->withCount([
-                'activeProducts as active_products_count' => function ($q) {
-                    $q->where('is_active', true)
-                      ->where('stock', '>', 0);
-                },
-            ])
-            ->having('active_products_count', '>', 0)
-            ->orderBy('name')
-            ->take(6)
-            ->get();
+        // ================================================
+        // AMBIL DATA KATEGORI
+        // - Hanya yang aktif
+        // - Hitung jumlah produk di masing-masing kategori
+        // ================================================
+        $categories = Category::active()
+    ->withCount('activeProducts')
+    ->having('active_products_count', '>', 0)
+    ->orderBy('name')
+    ->take(6)
+    ->get();
 
+        // Debug: pastikan Category yang dipakai benar
+        // Hapus baris ini setelah debug
+        // dd(Category::class);
+
+        // ================================================
+        // PRODUK UNGGULAN (FEATURED)
+        // - Flag is_featured = true
+        // - Aktif dan ada stok
+        // ================================================
         $featuredProducts = Product::query()
-            ->with(['category', 'primaryImage'])
-            ->active()
-            ->inStock()
-            ->featured()
+            ->with(['category', 'primaryImage']) // Eager load untuk performa
+            ->active()                           // Scope: is_active = true
+            ->inStock()                          // Scope: stock > 0
+            ->featured()                         // Scope: is_featured = true
             ->latest()
             ->take(8)
             ->get();
 
+        // ================================================
+        // PRODUK TERBARU
+        // - Urutkan dari yang paling baru
+        // ================================================
         $latestProducts = Product::query()
             ->with(['category', 'primaryImage'])
             ->active()
             ->inStock()
-            ->latest()
+            ->latest() // Order by created_at DESC
             ->take(8)
             ->get();
 
-        return view('home', [
-            'categories' => $categories,
-            'featuredProducts' => $featuredProducts,
-            'latestProducts' => $latestProducts,
-        ]);
+        // ================================================
+        // KIRIM DATA KE VIEW
+        // compact() membuat array ['key' => $key]
+        // ================================================
+        return view('home', compact(
+            'categories',
+            'featuredProducts',
+            'latestProducts'
+        ));
     }
 }

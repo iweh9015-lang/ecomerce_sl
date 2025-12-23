@@ -1,16 +1,18 @@
 <?php
 
-namespace App\Http\Controllers;
+namespace App\Http\Controllers\Admin;
 
+use App\Http\Controllers\Controller;
 use App\Models\Product;
+use Illuminate\Http\Request;
 
 class ProductController extends Controller
 {
     public function index()
     {
-        $products = Product::latest()->get();
+        $products = Product::latest()->paginate(10);
 
-        return view('products.index', compact('products'));
+        return view('admin.products.index', compact('products'));
     }
 
     public function create()
@@ -20,26 +22,32 @@ class ProductController extends Controller
 
     public function store(Request $request)
     {
-        // implementasi penyimpanan
+        Product::create($request->all());
+
+        return redirect()->route('admin.products.index');
     }
 
-    public function show($id)
+    public function show(Product $product)
     {
-        return view('admin.products.show');
+        return view('admin.products.show', compact('product'));
     }
 
-    public function edit($id)
+    public function edit(Product $product)
     {
-        return view('admin.products.edit');
+        return view('admin.products.edit', compact('product'));
     }
 
-    public function update(Request $request, $id)
+    public function update(Request $request, Product $product)
     {
-        // implementasi update
+        $product->update($request->all());
+
+        return redirect()->route('admin.products.index');
     }
 
-    public function destroy($id)
+    public function destroy(Product $product)
     {
-        // implementasi hapus
+        $product->delete();
+
+        return back();
     }
 }

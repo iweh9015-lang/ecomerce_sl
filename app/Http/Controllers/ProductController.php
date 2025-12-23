@@ -8,10 +8,6 @@ class ProductController extends Controller
 {
     public function show(Product $product)
     {
-        if (!$product->is_active || $product->stock <= 0) {
-            abort(404);
-        }
-
-        return view('products.show', compact('product'));
+        return view('product.show', compact('product'));
     }
 }
