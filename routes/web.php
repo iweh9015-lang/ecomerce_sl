@@ -47,7 +47,8 @@ Auth::routes();
 
 Route::get('/catalog', [CatalogController::class, 'index'])
     ->name('catalog.index');
-
+Route::get('/catalog/{catalog:slug}', [CatalogController::class, 'show'])
+    ->name('catalog.show');
 /*
 |--------------------------------------------------------------------------
 | PRODUCT DETAIL (PUBLIC)
