@@ -1,51 +1,85 @@
-@import "tailwindcss";
+/* ================================================
+   FILE: resources/css/app.css
+   FUNGSI: Entry point untuk semua CSS
+   ================================================ */
 
-/* ================================
-   SOURCE FILES (WAJIB)
-   ================================ */
-@source "../../vendor/laravel/framework/src/Illuminate/Pagination/resources/views/*.blade.php";
-@source "../../storage/framework/views/*.php";
-@source "../**/*.blade.php";
-@source "../**/*.js";
+/* Import Bootstrap CSS */
+/* Kita import di sini agar ikut ter-compile oleh Vite dan bisa di-minify saat production */
+@import "bootstrap/dist/css/bootstrap.min.css";
 
-/* ================================
-   THEME CONFIG
-   ================================ */
-@theme {
-    --font-sans: "Inter", ui-sans-serif, system-ui, sans-serif,
-        "Apple Color Emoji", "Segoe UI Emoji",
-        "Segoe UI Symbol", "Noto Color Emoji";
+/* Import Bootstrap Icons */
+@import "bootstrap-icons/font/bootstrap-icons.css";
+
+/* ================================================
+   CUSTOM STYLES - Variabel dan Override
+   ================================================ */  
+
+:root {
+    /* Warna Brand Toko */
+    --primary-color: #4f46e5;
+    /* Indigo */
+    --secondary-color: #10b981;
+    /* Emerald */
+    --accent-color: #f59e0b;
+    /* Amber */
+
+    /* Warna Text */
+    --text-dark: #1f2937;
+    --text-muted: #6b7280;
+    --text-light: #9ca3af;
 }
 
-/* ================================
-   COMPONENTS
-   ================================ */
-@layer components {
+/* Override Bootstrap Primary */
+.btn-primary {
+    background-color: var(--primary-color);
+    border-color: var(--primary-color);
+}
 
-    /* === STAT CARD === */
-    .stat-card {
-        @apply bg-white p-6 rounded-xl shadow-sm transition-all duration-300 ease-out;
-    }
+.btn-primary:hover {
+    background-color: #4338ca;
+    border-color: #4338ca;
+}
 
-    .stat-card:hover {
-        @apply -translate-y-1 shadow-lg;
-    }
+/* ================================================
+   LAYOUT STYLES
+   ================================================ */
 
-    .stat-label {
-        @apply text-sm text-gray-500 tracking-wide;
-    }
+body {
+    font-family: "Inter", system-ui, -apple-system, sans-serif;
+    color: var(--text-dark);
+}
 
-    .stat-value {
-        @apply text-4xl font-extrabold mt-2 text-gray-900;
-    }
+/* Navbar Custom */
+.navbar-brand {
+    font-weight: 700;
+    font-size: 1.5rem;
+}
 
-    /* === PRODUCT CARD === */
-    .product-card {
-        @apply relative overflow-hidden rounded-xl bg-white transition-all duration-300 ease-out hover:-translate-y-1 hover:shadow-xl;
-    }
+/* Footer */
+footer {
+    background-color: #1f2937;
+    color: #fff;
+}
 
-    /* === DISCOUNT BADGE === */
-    .badge-discount {
-        @apply absolute top-3 left-3 z-10 bg-red-600 text-white px-2.5 py-1 rounded-full text-xs font-bold tracking-wide;
-    }
+/* Card Produk */
+.product-card {
+    transition: transform 0.2s, box-shadow 0.2s;
+}
+
+.product-card:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 10px 25px rgba(0, 0, 0, 0.1);
+}
+
+/* Badge Diskon */
+.badge-discount {
+    position: absolute;
+    top: 10px;
+    left: 10px;
+    background-color: #ef4444;
+    color: white;
+    padding: 4px 8px;
+    border-radius: 4px;
+    font-size: 0.75rem;
+    font-weight: 600;
 }

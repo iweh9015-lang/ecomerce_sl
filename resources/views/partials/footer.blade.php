@@ -1,7 +1,7 @@
 {{-- ================================================
-     FILE: resources/views/partials/footer.blade.php
-     FUNGSI: Footer website
-     ================================================ --}}
+FILE: resources/views/partials/footer.blade.php
+FUNGSI: Footer website
+================================================ --}}
 
 <footer class="bg-dark text-light pt-5 pb-3 mt-5">
     <div class="container">

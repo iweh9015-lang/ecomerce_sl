@@ -1,81 +1,86 @@
 @extends('layouts.app')
 
-@section('title', 'Katalog Produk')
-
 @section('content')
-<div class="container mx-auto px-4 py-8">
+<div class="container py-5">
+    <div class="row">
+        {{-- SIDEBAR FILTER --}}
+        <div class="col-lg-3 mb-4">
+            <div class="card border-0 shadow-sm">
+                <div class="card-header bg-white fw-bold">Filter Produk</div>
+                <div class="card-body">
+                    <form action="{{ route('catalog.index') }}" method="GET">
+                        @if(request('q')) <input type="hidden" name="q" value="{{ request('q') }}"> @endif
 
-    <h1 class="text-2xl font-bold mb-6">Katalog Produk</h1>
+                        {{-- Filter Kategori --}}
+                        <div class="mb-4">
+                            <h6 class="fw-bold mb-2">Kategori</h6>
+                            @foreach($categories as $cat)
+                            <div class="form-check">
+                                <input class="form-check-input" type="radio" name="category" value="{{ $cat->slug }}" {{
+                                    request('category')==$cat->slug ? 'checked' : '' }}
+                                onchange="this.form.submit()">
+                                <label class="form-check-label">{{ $cat->name }} <small class="text-muted">({{
+                                        $cat->products_count }})</small></label>
+                            </div>
+                            @endforeach
+                        </div>
 
-    <!-- FILTER -->
-    <form method="GET" class="grid md:grid-cols-3 gap-4 mb-8">
-        <input type="text"
-               name="search"
-               value="{{ request('search') }}"
-               placeholder="Cari produk..."
-               class="border rounded px-3 py-2">
+                        {{-- Filter Harga --}}
+                        <div class="mb-3">
+                            <h6 class="fw-bold mb-2">Rentang Harga</h6>
+                            <div class="d-flex gap-2">
+                                <input type="number" name="min_price" class="form-control form-control-sm"
+                                    placeholder="Min" value="{{ request('min_price') }}">
+                                <input type="number" name="max_price" class="form-control form-control-sm"
+                                    placeholder="Max" value="{{ request('max_price') }}">
+                            </div>
+                        </div>
 
-        <select name="category" class="border rounded px-3 py-2">
-            <option value="">Semua Kategori</option>
-            @foreach ($categories as $cat)
-                <option value="{{ $cat->id }}"
-                    {{ request('category') == $cat->id ? 'selected' : '' }}>
-                    {{ $cat->name }}
-                </option>
-            @endforeach
-        </select>
-
-        <button class="bg-blue-600 text-white rounded px-4 py-2">
-            Filter
-        </button>
-    </form>
-
-    <!-- GRID PRODUK -->
-    @if ($products->count())
-        <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-6">
-            @foreach ($products as $product)
-               <a href="{{ route('product.show', $product) }}"
-   class="block bg-white border rounded-xl shadow-sm p-4 hover:shadow-md transition">
-
-
-                    <!-- IMAGE -->
-                    <div class="h-40 bg-gray-100 rounded mb-3 flex items-center justify-center">
-                        @if ($product->image)
-                            <img src="{{ asset('storage/' . $product->image) }}"
-                                 class="object-cover h-full w-full rounded">
-                        @else
-                            <span class="text-gray-400 text-sm">No Image</span>
-                        @endif
-                    </div>
-
-                    <h3 class="font-semibold text-lg">
-                        {{ $product->name }}
-                    </h3>
-
-                    <p class="text-sm text-gray-500 mb-1">
-                        {{ $product->category->name ?? '-' }}
-                    </p>
-
-                    <div class="font-bold text-blue-600 mb-2">
-                        Rp {{ number_format($product->price, 0, ',', '.') }}
-                    </div>
-
-                    <p class="text-sm text-gray-500">
-                        Stok: {{ $product->stock }}
-                    </p>
-                </a>
-            @endforeach
+                        <button type="submit" class="btn btn-primary w-100 btn-sm">Terapkan Filter</button>
+                        <a href="{{ route('catalog.index') }}"
+                            class="btn btn-outline-secondary w-100 btn-sm mt-2">Reset</a>
+                    </form>
+                </div>
+            </div>
         </div>
 
-        <!-- PAGINATION -->
-        <div class="mt-10">
-            {{ $products->links('pagination::tailwind') }}
-        </div>
-    @else
-        <div class="text-center text-gray-500 py-10">
-            Produk tidak tersedia
-        </div>
-    @endif
+        {{-- PRODUCT GRID --}}
+        <div class="col-lg-9">
+            <div class="d-flex justify-content-between align-items-center mb-4">
+                <h4 class="mb-0">Katalog Produk</h4>
+                {{-- Sorting --}}
+                <form method="GET" class="d-inline-block">
+                    @foreach(request()->except('sort') as $key => $value)
+                    <input type="hidden" name="{{ $key }}" value="{{ $value }}">
+                    @endforeach
+                    <select name="sort" class="form-select form-select-sm" onchange="this.form.submit()">
+                        <option value="newest" {{ request('sort')=='newest' ? 'selected' : '' }}>Terbaru</option>
+                        <option value="price_asc" {{ request('sort')=='price_asc' ? 'selected' : '' }}>Harga Terendah
+                        </option>
+                        <option value="price_desc" {{ request('sort')=='price_desc' ? 'selected' : '' }}>Harga Tertinggi
+                        </option>
+                    </select>
+                </form>
+            </div>
 
+            <div class="row row-cols-1 row-cols-md-3 g-4">
+                @forelse($products as $product)
+                <div class="col">
+                    <x-product-card :product="$product" />
+                </div>
+                @empty
+                <div class="col-12 text-center py-5">
+                    <img src="{{ asset('images/empty-state.svg') }}" width="150" class="mb-3 opacity-50">
+                    <h5>Produk tidak ditemukan</h5>
+                    <p class="text-muted">Coba kurangi filter atau gunakan kata kunci lain.</p>
+                </div>
+                @endforelse
+            </div>
+
+            <div class="mt-4">
+                {{ $products->links('pagination::bootstrap-5') }}
+            </div>
+        </div>
+    </div>
 </div>
 @endsection

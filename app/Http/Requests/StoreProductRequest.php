@@ -53,9 +53,9 @@ class StoreProductRequest extends FormRequest
             // Validasi TIAP item di dalam array images
             // 'images.*' artinya "setiap file di dalam array images"
             'images.*' => [
-                'image', // Harus berupa file gambar
+                'image',              // Harus berupa file gambar
                 'mimes:jpg,png,webp', // Ekstensi yang diperbolehkan
-                'max:2048', // Maksimal 2MB per file (2048 KB)
+                'max:2048',           // Maksimal 2MB per file (2048 KB)
             ],
         ];
     }

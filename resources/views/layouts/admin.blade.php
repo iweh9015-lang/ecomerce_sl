@@ -7,6 +7,8 @@
     <title>Modernize Free</title>
     <link rel="shortcut icon" type="image/png" href="{{asset('assets/images/logos/favicon.png')}}" />
     <link rel="stylesheet" href="{{asset('assets/css/styles.min.css')}}" />
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.css" rel="stylesheet">
+    @stack('styles')
 </head>
 
 <body>
@@ -22,15 +24,39 @@
             @include('layouts.partials.navbar')
             <!--  Header End -->
             <div class="container-fluid">
-                @include('layouts.partials.content')
                 <!--  Row 1 -->
                 @include('partials.flash-messages')
                 @yield('content')
-                <div class="py-6 px-6 text-center">
-                    <p class="mb-0 fs-4">Design and Developed by <a href="https://adminmart.com/" target="_blank"
-                            class="pe-1 text-primary text-decoration-underline">AdminMart.com</a> Distributed by <a
-                            href="https://themewagon.com">ThemeWagon</a></p>
-                </div>
+                <footer class="mt-5">
+                    <div class="card border-0 shadow-sm">
+                        <div class="card-body py-4 px-4">
+                            <div class="row align-items-center">
+
+                                {{-- LEFT --}}
+                                <div class="col-md-6 text-center text-md-start mb-2 mb-md-0">
+                                    <span class="fw-semibold">
+                                        <i class="bi bi-shop me-1 text-primary"></i>
+                                        Iqbaal Store
+                                    </span>
+                                    <span class="text-muted">
+                                        &copy; {{ date('Y') }}. All rights reserved.
+                                    </span>
+                                </div>
+
+                                {{-- RIGHT --}}
+                                <div class="col-md-6 text-center text-md-end">
+                                    <span class="text-muted me-1">Designed & Developed by</span>
+                                    <a href="https://kaceinspace.vercel.app" target="_blank"
+                                        class="fw-semibold text-decoration-none text-primary">
+                                        Kace
+                                    </a>
+                                    <i class="bi bi-box-arrow-up-right ms-1 text-primary"></i>
+                                </div>
+
+                            </div>
+                        </div>
+                    </div>
+                </footer>
             </div>
         </div>
     </div>
@@ -41,6 +67,7 @@
     <script src="{{asset('assets/libs/apexcharts/dist/apexcharts.min.js')}}"></script>
     <script src="{{asset('assets/libs/simplebar/dist/simplebar.js')}}"></script>
     <script src="{{asset('assets/js/dashboard.js')}}"></script>
+    @stack('scripts')
 </body>
 
 </html>

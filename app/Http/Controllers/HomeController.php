@@ -28,12 +28,16 @@ class HomeController extends Controller
         // - Hanya yang aktif
         // - Hitung jumlah produk di masing-masing kategori
         // ================================================
-        $categories = Category::active()
-    ->withCount('activeProducts')
-    ->having('active_products_count', '>', 0)
-    ->orderBy('name')
-    ->take(6)
-    ->get();
+        $categories = Category::query()
+            ->active() // Scope: hanya is_active = true
+            ->withCount(['activeProducts' => function ($q) {
+                $q->where('is_active', true)
+                    ->where('stock', '>', 0);
+            }])
+            ->having('active_products_count', '>', 0) // Hanya yang punya produk
+            ->orderBy('name')
+            ->take(6) // Batasi 6 kategori
+            ->get();
 
         // Debug: pastikan Category yang dipakai benar
         // Hapus baris ini setelah debug

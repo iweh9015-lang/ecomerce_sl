@@ -1,0 +1,65 @@
+1️⃣ HomeController
+
+👉 menentukan produk muncul atau tidak
+
+📂 app/Http/Controllers/HomeController.php
+
+2️⃣ CatalogController
+
+👉 untuk halaman katalog
+
+📂 app/Http/Controllers/CatalogController.php
+
+3️⃣ CartController
+
+👉 biar keranjang benar-benar nambah & update
+
+📂 app/Http/Controllers/CartController.php
+
+4️⃣ WishlistController
+
+👉 biar wishlist toggle & counter jalan
+
+📂 app/Http/Controllers/WishlistController.php
+
+5️⃣ Model Product
+
+👉 relasi, scope, & stok
+
+📂 app/Models/Product.php
+
+6️⃣ Model User
+
+👉 relasi cart, wishlist
+
+📂 app/Models/User.php
+
+7️⃣ Model Cart & CartItem
+
+👉 WAJIB agar keranjang berfungsi
+
+📂
+
+app/Models/Cart.php
+
+app/Models/CartItem.php
+
+8️⃣ Migration Cart & Wishlist
+
+👉 untuk pastikan struktur DB benar
+
+📂
+
+database/migrations/*_create_carts_table.php
+
+database/migrations/*_create_cart_items_table.php
+
+database/migrations/*_create_wishlists_table.php
+
+9️⃣ Blade Produk (MINIMAL)
+
+👉 hanya satu saja
+
+📂 resources/views/product/show.blade.php
+atau
+📂 resources/views/catalog/index.blade.php

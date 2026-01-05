@@ -1,24 +1,45 @@
 <?php
 
+// app/Http/Controllers/OrderController.php
+
 namespace App\Http\Controllers;
+
+use App\Models\Order;
 
 class OrderController extends Controller
 {
+    /**
+     * Menampilkan daftar pesanan milik user yang sedang login.
+     */
     public function index()
     {
-        if (view()->exists('orders.index')) {
-            return view('orders.index');
-        }
+        // PENTING: Jangan gunakan Order::all() !
+        // Kita hanya mengambil order milik user yg sedang login menggunakan relasi hasMany.
+        // auth()->user()->orders() akan otomatis memfilter: WHERE user_id = current_user_id
+        $orders = auth()->user()->orders()
+            ->with(['items.product']) // Eager Load nested: Order -> OrderItems -> Product
+            ->latest() // Urutkan dari pesanan terbaru
+            ->paginate(10);
 
-        return response()->view('errors.simple', ['message' => 'Orders page not implemented.'], 200);
+        return view('orders.index', compact('orders'));
     }
 
-    public function show($order)
+    /**
+     * Menampilkan detail satu pesanan.
+     */
+    public function show(Order $order)
     {
-        if (view()->exists('orders.show')) {
-            return view('orders.show');
+        // 1. Authorize (Security Check)
+        // User A TIDAK BOLEH melihat pesanan User B.
+        // Kita cek apakah ID pemilik order sama dengan ID user yang login.
+        if ($order->user_id !== auth()->id()) {
+            abort(403, 'Anda tidak memiliki akses ke pesanan ini.');
         }
 
-        return response()->view('errors.simple', ['message' => 'Order detail not implemented.'], 200);
+        // 2. Load relasi detail
+        // Kita butuh data items dan gambar produknya untuk ditampilkan di invoice view.
+        $order->load(['items.product', 'items.product.primaryImage']);
+
+        return view('orders.show', compact('order'));
     }
 }

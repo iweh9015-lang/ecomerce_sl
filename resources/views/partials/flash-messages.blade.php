@@ -1,7 +1,7 @@
 {{-- ================================================
-     FILE: resources/views/partials/flash-messages.blade.php
-     FUNGSI: Menampilkan notifikasi flash messages
-     ================================================ --}}
+FILE: resources/views/partials/flash-messages.blade.php
+FUNGSI: Menampilkan notifikasi flash messages
+================================================ --}}
 
 {{-- Success Message --}}
 @if(session('success'))

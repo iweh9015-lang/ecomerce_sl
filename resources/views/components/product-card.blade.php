@@ -4,12 +4,12 @@
     {{-- Gambar --}}
     <div class="position-relative overflow-hidden bg-light" style="padding-top: 100%;">
         <img src="{{ $product->image_url }}"
-             class="card-img-top position-absolute top-0 start-0 w-100 h-100 object-fit-cover">
+            class="card-img-top position-absolute top-0 start-0 w-100 h-100 object-fit-cover">
 
         @if($product->has_discount)
-             <span class="position-absolute top-0 start-0 m-2 badge bg-danger">
-                 -{{ $product->discount_percentage }}%
-             </span>
+        <span class="position-absolute top-0 start-0 m-2 badge bg-danger">
+            -{{ $product->discount_percentage }}%
+        </span>
         @endif
     </div>
 
@@ -21,13 +21,19 @@
                 {{ $product->name }}
             </a>
         </h6>
+
         <div class="mt-auto">
             @if($product->has_discount)
-                <p class="fw-bold text-danger mb-0">{{ $product->formatted_price }}</p>
-                <small class="text-decoration-line-through text-muted">{{ $product->formatted_original_price }}</small>
+            <p class="fw-bold text-danger mb-0">{{ $product->formatted_price }}</p>
+            <small class="text-decoration-line-through text-muted">{{ $product->formatted_original_price }}</small>
             @else
-                <p class="fw-bold text-primary mb-0">{{ $product->formatted_price }}</p>
+            <p class="fw-bold text-primary mb-0">{{ $product->formatted_price }}</p>
             @endif
+            <button onclick="toggleWishlist({{ $product->id }})"
+                class="wishlist-btn-{{ $product->id }} btn btn-light btn-sm rounded-circle p-2 transition">
+                <i
+                    class="bi {{ Auth::check() && Auth::user()->hasInWishlist($product) ? 'bi-heart-fill text-danger' : 'bi-heart text-secondary' }} fs-5"></i>
+            </button>
         </div>
     </div>
 </div>

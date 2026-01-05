@@ -2,50 +2,45 @@
 
 namespace App\Http\Controllers;
 
-use App\Services\CartService;
-use App\Services\OrderService;
+use App\Models\Cart;
 use Illuminate\Http\Request;
 
 class CheckoutController extends Controller
 {
-    protected $orderService;
-    protected $cartService;
-
-    public function __construct(OrderService $orderService, CartService $cartService)
-    {
-        $this->orderService = $orderService;
-        $this->cartService = $cartService;
-    }
-
     public function index()
     {
-        $cart = $this->cartService->getCart();
+        $user = auth()->user();
 
-        if (!$cart || $cart->items->isEmpty()) {
-            return redirect()->route('cart.index')->with('error', 'Keranjang kosong.');
+        // Ambil cart user + item + produk
+        $cart = Cart::with('items.product')
+            ->where('user_id', $user->id)
+            ->first();
+
+        // Jika cart belum ada
+        if (!$cart) {
+            return view('checkout.index', [
+                'cartItems' => collect(),
+                'totalPrice' => 0,
+            ]);
         }
 
-        return view('checkout.index', compact('cart'));
+        $cartItems = $cart->items;
+
+        // Hitung total harga
+        $totalPrice = $cartItems->sum(function ($item) {
+            return $item->product->price * $item->quantity;
+        });
+
+        return view('checkout.index', [
+            'cartItems' => $cartItems,
+            'totalPrice' => $totalPrice,
+        ]);
     }
 
-    public function store(Request $request)
+    public function process(Request $request)
     {
-        $request->validate([
-            'name' => 'required|string|max:255',
-            'phone' => 'required|string|max:20',
-            'address' => 'required|string|max:500',
-        ]);
-
-        try {
-            $order = $this->orderService->createOrder(
-                auth()->user(),
-                $request->only(['name', 'phone', 'address'])
-            );
-
-            return redirect()->route('orders.show', $order->id)
-                ->with('success', 'Pesanan berhasil dibuat! Silahkan lakukan pembayaran.');
-        } catch (\Exception $e) {
-            return back()->with('error', $e->getMessage());
-        }
+        // Nanti kita isi
+        return redirect()->route('checkout.index')
+            ->with('success', 'Checkout berhasil diproses');
     }
 }

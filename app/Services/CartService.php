@@ -149,6 +149,10 @@ class CartService
         $guestCart->delete();
     }
 
+    /**
+     * Helper untuk memastikan user berhak mengubah cart ini
+     * Mencegah Insecure Direct Object Reference (IDOR).
+     */
     private function verifyCartOwnership(Cart $cart): void
     {
         $currentCart = $this->getCart();

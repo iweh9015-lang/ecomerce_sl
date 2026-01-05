@@ -1,5 +1,7 @@
 <?php
 
+// database/seeders/CategorySeeder.php
+
 namespace Database\Seeders;
 
 use App\Models\Category;
@@ -49,9 +51,7 @@ class CategorySeeder extends Seeder
         ];
 
         foreach ($categories as $category) {
-            Category::firstOrCreate([
-                'slug' => $category['slug'],
-            ], $category);
+            Category::create($category);
         }
 
         $this->command->info('✅ Categories seeded successfully!');
