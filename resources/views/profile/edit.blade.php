@@ -18,7 +18,7 @@
     </div>
 
     <div class="mt-4">
-        {{ $products->links() }}
+     {{  $products = \App\Models\Product::with(['images', 'category'])->paginate(10);}}
     </div>
     @else
     <div class="text-center py-5 bg-light rounded-3 shadow-sm">

@@ -15,7 +15,7 @@ use App\Http\Controllers\MidtransNotificationController;
 use App\Http\Controllers\OrderController;
 use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\WishlistController;
-use Illuminate\Support\Facades\Route;
+use Illuminate\Support\Facades\Route; // Baris ini wajib ada
 
 // ==================================================
 // HALAMAN PUBLIK
@@ -48,7 +48,9 @@ Route::middleware('auth')->group(function () {
     // Checkout
     Route::get('/checkout', [CheckoutController::class, 'index'])->name('checkout.index');
     Route::post('/checkout', [CheckoutController::class, 'store'])->name('checkout.store');
-
+    Route::get('/checkout/process', [CheckoutController::class, 'success'])->name('checkout.process');
+    Route::post('/checkout/process', [CheckoutController::class, 'store'])->name('checkout.store');
+    Route::post('/checkout/proces', [CheckoutController::class, 'process'])->name('checkout.process');
     // Orders
     Route::get('/orders', [OrderController::class, 'index'])->name('orders.index');
     Route::get('/orders/{order}', [OrderController::class, 'show'])->name('orders.show');
@@ -115,4 +117,3 @@ Route::controller(GoogleController::class)->group(function () {
 Route::post('/midtrans/notification', [MidtransNotificationController::class, 'handle'])
     ->name('midtrans.notification');
 // Batasi 5 request per menit
-Route::post('/login', [LoginController::class, 'login'])->middleware('throttle:5,1');

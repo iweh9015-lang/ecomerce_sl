@@ -5,7 +5,7 @@ FUNGSI: Halaman utama website
 
 @extends('layouts.app')
 
-@section('title', 'Beranda')
+@section('title', 'Beranda', 'Halaman utama website e-commerce')
 
 @section('content')
 {{-- Hero Section --}}
@@ -20,13 +20,13 @@ FUNGSI: Halaman utama website
                     Temukan berbagai produk berkualitas dengan harga terbaik.
                     Gratis ongkir untuk pembelian pertama!
                 </p>
-                <a href="{{ route('catalog.index') }}" class="btn btn-light btn-lg">
+                <a href="{{ route('catalog.index') }}" class="btn btn-danger btn-lg">
                     <i class="bi bi-bag me-2"></i>Mulai Belanja
                 </a>
             </div>
             <div class="col-lg-6 d-none d-lg-block text-center">
-                <img src="{{ asset('images/hero-shopping.svg') }}" alt="Shopping" class="img-fluid"
-                    style="max-height: 400px;">
+                <img src="{{ asset('images/house.png') }}" alt="Shopping" class="img-fluid"
+                    style="max-height: 300px;">
             </div>
         </div>
     </div>

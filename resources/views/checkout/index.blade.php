@@ -1,82 +1,72 @@
 @extends('layouts.app')
-
-@section('title', 'Checkout')
-
 @section('content')
-<div class="container py-4">
 
-    <h1 class="mb-4 fw-bold">Checkout</h1>
+<div class="container max-w-7xl mx-auto px-4 py-8">
+    <h1 class="h2 mb-5 fw-bold">Checkout</h1>
 
-    {{-- CART EMPTY --}}
-    @if($cartItems->isEmpty())
-        <div class="alert alert-warning">
-            Keranjang belanja kamu masih kosong.
-        </div>
-        <a href="{{ route('home') }}" class="btn btn-primary">
-            Kembali Belanja
-        </a>
-    @else
+    <form action="{{ route('checkout.store') }}" method="POST">
+        @csrf
 
-    <div class="row">
-        {{-- LEFT: SHIPPING / USER INFO --}}
-        <div class="col-md-7">
-            <div class="card mb-4">
-                <div class="card-header fw-semibold">
-                    Informasi Pengiriman
-                </div>
-                <div class="card-body">
-                    <p class="mb-2"><strong>Nama:</strong> {{ auth()->user()->name }}</p>
-                    <p class="mb-2"><strong>Email:</strong> {{ auth()->user()->email }}</p>
-                    <p class="mb-0 text-muted">
-                        Alamat pengiriman akan diatur di tahap selanjutnya.
-                    </p>
-                </div>
-            </div>
-        </div>
+        <div class="row g-5">
+            <!-- Form Informasi Pengiriman -->
+            <div class="col-lg-8">
+                <div class="card shadow-sm">
+                    <div class="card-body">
+                        <h2 class="h5 card-title mb-4">Informasi Pengiriman</h2>
 
-        {{-- RIGHT: ORDER SUMMARY --}}
-        <div class="col-md-5">
-            <div class="card">
-                <div class="card-header fw-semibold">
-                    Ringkasan Pesanan
-                </div>
-                <div class="card-body">
-                    <ul class="list-group mb-3">
-                        @foreach($cartItems as $item)
-                            <li class="list-group-item d-flex justify-content-between">
-                                <div>
-                                    {{ $item->product->name }}
-                                    <small class="text-muted d-block">
-                                        Qty: {{ $item->quantity }}
-                                    </small>
-                                </div>
-                                <span>
-                                    Rp {{ number_format($item->product->price * $item->quantity, 0, ',', '.') }}
-                                </span>
-                            </li>
-                        @endforeach
-                    </ul>
+                        <div class="row g-4">
+                            <div class="col-12">
+                                <label for="name" class="form-label">Nama Penerima</label>
+                                <input type="text" name="name" id="name" class="form-control"
+                                    value="{{ auth()->user()->name }}" required>
+                            </div>
 
-                    <hr>
+                            <div class="col-12">
+                                <label for="phone" class="form-label">Nomor Telepon</label>
+                                <input type="text" name="phone" id="phone" class="form-control" required>
+                            </div>
 
-                    <div class="d-flex justify-content-between fw-bold mb-3">
-                        <span>Total</span>
-                        <span>
-                            Rp {{ number_format($totalPrice, 0, ',', '.') }}
-                        </span>
+                            <div class="col-12">
+                                <label for="address" class="form-label">Alamat Lengkap</label>
+                                <textarea name="address" id="address" rows="4" class="form-control" required></textarea>
+                            </div>
+                        </div>
                     </div>
+                </div>
+            </div>
 
-                    <form action="{{ route('checkout.process') }}" method="POST">
-                            @csrf
-                            <button type="submit" class="btn btn-primary">
-                             Proses Checkout
-                    </button>
-                    </form>
+            <!-- Ringkasan Pesanan -->
+            <div class="col-lg-4">
+                <div class="card shadow-sm sticky-top" style="top: 1.5rem;">
+                    <div class="card-body">
+                        <h2 class="h5 card-title mb-4">Ringkasan Pesanan</h2>
+
+                        <div class="mb-4" style="max-height: 300px; overflow-y: auto;">
+                            @foreach($cart->items as $item)
+                            <div class="d-flex justify-content-between mb-2 small text-muted">
+                                <span>{{ $item->product->name }} × {{ $item->quantity }}</span>
+                                <span class="fw-medium text-dark">Rp {{ number_format($item->subtotal, 0, ',', '.')
+                                    }}</span>
+                            </div>
+                            @endforeach
+                        </div>
+
+                        <hr class="my-4">
+
+                        <div class="d-flex justify-content-between mb-4">
+                            <span class="h6 mb-0">Total</span>
+                            <span class="h6 mb-0 fw-bold">Rp {{ number_format($cart->items->sum('subtotal'), 0, ',',
+                                '.') }}</span>
+                        </div>
+
+                        <button type="submit" class="btn btn-primary btn-lg w-100 shadow-sm">
+                            Buat Pesanan
+                        </button>
+                    </div>
                 </div>
             </div>
         </div>
-    </div>
-
-    @endif
+    </form>
 </div>
+
 @endsection

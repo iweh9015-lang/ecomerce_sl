@@ -4,7 +4,7 @@
 <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
-    <title>Modernize Free</title>
+    <title>Halaman Ceo Iqbaal</title>
     <link rel="shortcut icon" type="image/png" href="{{asset('assets/images/logos/favicon.png')}}" />
     <link rel="stylesheet" href="{{asset('assets/css/styles.min.css')}}" />
     <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.css" rel="stylesheet">
@@ -46,9 +46,9 @@
                                 {{-- RIGHT --}}
                                 <div class="col-md-6 text-center text-md-end">
                                     <span class="text-muted me-1">Designed & Developed by</span>
-                                    <a href="https://kaceinspace.vercel.app" target="_blank"
+                                    <a href="https://iqbaal.vercel.app" target="_blank"
                                         class="fw-semibold text-decoration-none text-primary">
-                                        Kace
+                                        Iqbaal 
                                     </a>
                                     <i class="bi bi-box-arrow-up-right ms-1 text-primary"></i>
                                 </div>

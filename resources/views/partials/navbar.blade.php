@@ -43,7 +43,7 @@ FUNGSI: Navigation bar untuk customer
                 {{-- Wishlist --}}
                 <li class="nav-item">
                     <a class="nav-link position-relative" href="{{ route('wishlist.index') }}">
-                        <i class="bi bi-heart">❤️</i>
+                        <i class="bi bi-heart"></i>
                         @if(auth()->user()->wishlists()->count() > 0)
                         <span class="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-danger"
                             style="font-size: 0.6rem;">
@@ -56,7 +56,7 @@ FUNGSI: Navigation bar untuk customer
                 {{-- Cart --}}
                 <li class="nav-item">
                     <a class="nav-link position-relative" href="{{ route('cart.index') }}">
-                        <i class="bi bi-cart3">🛒</i>
+                        <i class="bi bi-cart3"></i>
                         @php
                         $cartCount = auth()->user()->cart?->items()->count() ?? 0;
                         @endphp
@@ -80,12 +80,12 @@ FUNGSI: Navigation bar untuk customer
                     <ul class="dropdown-menu dropdown-menu-end">
                         <li>
                             <a class="dropdown-item" href="{{ route('profile.edit') }}">
-                                <i class="bi bi-person me-2">👤</i> Profil Saya
+                                <i class="bi bi-person me-2"></i> Profil Saya
                             </a>
                         </li>
                         <li>
                             <a class="dropdown-item" href="{{ route('orders.index') }}">
-                                <i class="bi bi-bag me-2">🛒</i> Pesanan Saya
+                                <i class="bi bi-bag me-2"></i> Pesanan Saya
                             </a>
                         </li>
                         @if(auth()->user()->isAdmin())
@@ -93,7 +93,7 @@ FUNGSI: Navigation bar untuk customer
                             <hr class="dropdown-divider">
                         </li>
                         <li>
-                            <a class="dropdown-item text-primary" href="{{ route('admin.dashboard') }}">
+                            <a class="dropdown-item" href="{{ route('admin.dashboard') }}">
                                 @csrf
                                 <button type="submit" class="dropdown-item text-primary">
                                 <i class="bi bi-speedometer2 me-2"></i> Admin Panel

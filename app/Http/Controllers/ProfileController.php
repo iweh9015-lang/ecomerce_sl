@@ -10,18 +10,20 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Redirect;
 use Illuminate\Support\Facades\Storage;
-use Illuminate\View\View;
 
 class ProfileController extends Controller
 {
     /**
      * Menampilkan form edit profil.
      */
-    public function edit(Request $request): View
+    public function edit(Request $request)
     {
+        // JANGAN gunakan Product::all() jika ingin pakai ->links()
+        $products = \App\Models\Product::latest()->paginate(10);
+
         return view('profile.edit', [
-            // Kirim data user yang sedang login ke view
             'user' => $request->user(),
+            'products' => $products,
         ]);
     }
 

@@ -142,7 +142,7 @@ class Product extends Model
             return $this->primaryImage->image_url;
         }
 
-        return asset('images/no-image.png');
+        return asset('images/box.png');
     }
 
     /**
