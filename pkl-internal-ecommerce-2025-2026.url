@@ -1,2 +1,8 @@
 [InternetShortcut]
 URL=https://github.com/kaceinspace/pkl-internal-ecommerce-2025-2026
+$user = new \App\Models\User();
+$user->name = "Iqbaal Admin";
+$user->email = "admin@example.com";
+$user->password = Hash::make("password");
+$user->role = "admin";
+$user->save();

@@ -64,17 +64,24 @@ class Product extends Model
     /**
      * Produk memiliki banyak gambar.
      */
+    // Pastikan ini ada di App\Models\Product.php
     public function images()
     {
-        return $this->hasMany(ProductImage::class)->orderBy('sort_order');
+        return $this->hasMany(ProductImage::class);
     }
 
-    /**
-     * Gambar utama produk.
-     */
     public function primaryImage()
     {
         return $this->hasOne(ProductImage::class)->where('is_primary', true);
+    }
+
+    public function getImageUrlAttribute()
+    {
+        if ($this->primaryImage) {
+            return asset('storage/'.$this->primaryImage->image_path);
+        }
+
+        return asset('images/no-image.png'); // Sediakan gambar default
     }
 
     /**
@@ -136,14 +143,6 @@ class Product extends Model
     /**
      * URL gambar utama atau placeholder.
      */
-    public function getImageUrlAttribute(): string
-    {
-        if ($this->primaryImage) {
-            return $this->primaryImage->image_url;
-        }
-
-        return asset('images/box.png');
-    }
 
     /**
      * Cek apakah produk tersedia (aktif dan ada stok).

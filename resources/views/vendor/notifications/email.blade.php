@@ -4,26 +4,26 @@
 # {{ $greeting }}
 @else
 @if ($level === 'error')
-# @lang('Whoops!')
+# @lang('Aduh, ada masalah!')
 @else
-# @lang('Hello!')
+# @lang('Halo!')
 @endif
 @endif
 
 {{-- Intro Lines --}}
 @foreach ($introLines as $line)
 {{ $line }}
-
 @endforeach
 
 {{-- Action Button --}}
 @isset($actionText)
-<?php
+@php
     $color = match ($level) {
-        'success', 'error' => $level,
-        default => 'primary',
+        'success' => 'success',
+        'error'   => 'error',
+        default   => 'primary',
     };
-?>
+@endphp
 <x-mail::button :url="$actionUrl" :color="$color">
 {{ $actionText }}
 </x-mail::button>
@@ -32,27 +32,28 @@
 {{-- Outro Lines --}}
 @foreach ($outroLines as $line)
 {{ $line }}
-
 @endforeach
 
 {{-- Salutation --}}
 @if (! empty($salutation))
 {{ $salutation }}
 @else
-@lang('Regards,')<br>
-{{ config('app.name') }}
+Salam hangat,<br>
+**{{ config('app.name') }} Team**
 @endif
 
 {{-- Subcopy --}}
 @isset($actionText)
 <x-slot:subcopy>
 @lang(
-    "If you're having trouble clicking the \":actionText\" button, copy and paste the URL below\n".
-    'into your web browser:',
+    "Jika Anda kesulitan menekan tombol \":actionText\", silakan salin dan tempel URL di bawah ini\n".
+    "ke browser web Anda:",
     [
         'actionText' => $actionText,
     ]
-) <span class="break-all">[{{ $displayableActionUrl }}]({{ $actionUrl }})</span>
+) 
+
+<span class="break-all" style="color: #3498db;">[{{ $displayableActionUrl }}]({{ $actionUrl }})</span>
 </x-slot:subcopy>
 @endisset
 </x-mail::message>

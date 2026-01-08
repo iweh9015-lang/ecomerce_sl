@@ -1,11 +1,13 @@
 <?php
 
+// ================================================
+// FILE: routes/web.php
+// FUNGSI: Definisi semua route website
+// ================================================
+
 use App\Http\Controllers\Admin\CategoryController;
 use App\Http\Controllers\Admin\DashboardController;
-use App\Http\Controllers\Admin\OrderController as AdminOrderController;
-use App\Http\Controllers\Admin\PaymentController;
 use App\Http\Controllers\Admin\ProductController;
-use App\Http\Controllers\Admin\ReportController;
 use App\Http\Controllers\Auth\GoogleController;
 use App\Http\Controllers\CartController;
 use App\Http\Controllers\CatalogController;
@@ -15,27 +17,25 @@ use App\Http\Controllers\MidtransNotificationController;
 use App\Http\Controllers\OrderController;
 use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\WishlistController;
-use Illuminate\Support\Facades\Route; // Baris ini wajib ada
 
-// ==================================================
-// HALAMAN PUBLIK
-// ==================================================
+// ================================================
+// HALAMAN PUBLIK (Tanpa Login)
+// ================================================
 
+// Homepage
 Route::get('/', [HomeController::class, 'index'])->name('home');
-
-// Katalog
+Route::get('/home', [HomeController::class, 'index'])->name('home');
+// Katalog Produk
 Route::get('/catalog', [CatalogController::class, 'index'])->name('catalog.index');
+Route::get('/products', [CatalogController::class, 'index'])->name('catalog.index');
 Route::get('/products/{slug}', [CatalogController::class, 'show'])->name('catalog.show');
 
-// Redirect lama
-Route::redirect('/products', '/catalog');
-
-// ==================================================
-// HALAMAN CUSTOMER (LOGIN)
-// ==================================================
+// ================================================
+// HALAMAN YANG BUTUH LOGIN (Customer)
+// ================================================
 
 Route::middleware('auth')->group(function () {
-    // Cart
+    // Keranjang Belanja
     Route::get('/cart', [CartController::class, 'index'])->name('cart.index');
     Route::post('/cart/add', [CartController::class, 'add'])->name('cart.add');
     Route::patch('/cart/{item}', [CartController::class, 'update'])->name('cart.update');
@@ -48,16 +48,14 @@ Route::middleware('auth')->group(function () {
     // Checkout
     Route::get('/checkout', [CheckoutController::class, 'index'])->name('checkout.index');
     Route::post('/checkout', [CheckoutController::class, 'store'])->name('checkout.store');
-    Route::get('/checkout/process', [CheckoutController::class, 'success'])->name('checkout.process');
-    Route::post('/checkout/process', [CheckoutController::class, 'store'])->name('checkout.store');
-    Route::post('/checkout/proces', [CheckoutController::class, 'process'])->name('checkout.process');
-    // Orders
+
+    // Pesanan Saya
     Route::get('/orders', [OrderController::class, 'index'])->name('orders.index');
     Route::get('/orders/{order}', [OrderController::class, 'show'])->name('orders.show');
     Route::get('/orders/{order}/success', [OrderController::class, 'success'])->name('orders.success');
     Route::get('/orders/{order}/pending', [OrderController::class, 'pending'])->name('orders.pending');
 
-    // Profile
+    // Profil
     Route::get('/profile', [ProfileController::class, 'edit'])->name('profile.edit');
     Route::patch('/profile', [ProfileController::class, 'update'])->name('profile.update');
     Route::delete('/profile', [ProfileController::class, 'destroy'])->name('profile.destroy');
@@ -65,55 +63,68 @@ Route::middleware('auth')->group(function () {
     Route::put('/profile/password', [ProfileController::class, 'updatePassword'])->name('profile.password.update');
 });
 
-// ==================================================
-// ADMIN ROUTES
-// ==================================================
+// ================================================
+// HALAMAN ADMIN (Butuh Login + Role Admin)
+// ================================================
 
-Route::middleware(['auth', 'admin'])
-    ->prefix('admin')
-    ->name('admin.')
-    ->group(function () {
-        // Dashboard
-        Route::get('/dashboard', [DashboardController::class, 'index'])->name('dashboard');
+Route::middleware(['auth', 'admin'])->prefix('admin')->name('admin.')->group(function () {
+    // Laporan Penjualan
+    Route::get('/reports/sales', [App\Http\Controllers\Admin\ReportController::class, 'sales'])->name('reports.sales');
+    // Update status pesanan
+    Route::patch('/orders/{order}/update-status', [App\Http\Controllers\Admin\OrderController::class, 'updateStatus'])->name('orders.update-status');
+    // Dashboard
+    Route::get('dashboard', [DashboardController::class, 'index'])->name('dashboard');
 
-        // Reports
-        Route::get('/reports/sales', [ReportController::class, 'sales'])->name('reports.sales');
+    // Kategori CRUD (Resource sudah mencakup index, create, store, edit, update, destroy)
+    Route::resource('categories', CategoryController::class);
 
-        // Categories & Products
-        Route::resource('categories', CategoryController::class)->except(['show']);
-        Route::resource('products', ProductController::class);
+    // Produk CRUD
+    Route::resource('products', ProductController::class);
 
-        // Orders
-        Route::patch('/orders/{order}/update-status', [AdminOrderController::class, 'updateStatus'])
-            ->name('orders.update-status');
+    // Pesanan
+    Route::resource('orders', App\Http\Controllers\Admin\OrderController::class)->only(['index', 'show', 'update']);
+    Route::patch('/orders/{order}/update-status', [App\Http\Controllers\Admin\OrderController::class, 'updateStatus'])->name('orders.update-status');
 
-        Route::resource('orders', AdminOrderController::class)->only(['index', 'show', 'update']);
-
-        // Payment (ADMIN)
-        Route::get('/orders/{order}/pay', [PaymentController::class, 'show'])->name('orders.pay');
-        Route::get('/orders/{order}/success', [PaymentController::class, 'success'])->name('orders.payment.success');
-        Route::get('/orders/{order}/pending', [PaymentController::class, 'pending'])->name('orders.payment.pending');
-    });
-
-// ==================================================
-// AUTH DEFAULT
-// ==================================================
-
-Auth::routes();
-
-// ==================================================
-// GOOGLE OAUTH
-// ==================================================
-
-Route::controller(GoogleController::class)->group(function () {
-    Route::get('/auth/google', 'redirect')->name('auth.google');
-    Route::get('/auth/google/callback', 'callback')->name('auth.google.callback');
+    // Laporan
+    Route::get('/reports/sales', [App\Http\Controllers\Admin\ReportController::class, 'sales'])->name('reports.sales');
 });
 
-// ==================================================
-// MIDTRANS WEBHOOK (PUBLIC)
-// ==================================================
+// Resource route untuk orders (index, show, update)
+Route::resource('orders', App\Http\Controllers\Admin\OrderController::class)->only(['index', 'show', 'update']);
 
-Route::post('/midtrans/notification', [MidtransNotificationController::class, 'handle'])
+// ================================================
+// AUTH ROUTES (dari Laravel UI)
+// ================================================
+Auth::routes();
+
+use Illuminate\Support\Facades\Route;
+
+// ================================================
+// GOOGLE OAUTH ROUTES
+// ================================================
+// Route ini diakses oleh browser, tidak perlu middleware auth
+// ================================================
+
+Route::controller(GoogleController::class)->group(function () {
+    // ================================================
+    // ROUTE 1: REDIRECT KE GOOGLE
+    // ================================================
+    // URL: /auth/google
+    // Dipanggil saat user klik tombol "Login dengan Google"
+    // ================================================
+    Route::get('/auth/google', 'redirect')
+        ->name('auth.google');
+
+    // ================================================
+    // ROUTE 2: CALLBACK DARI GOOGLE
+    // ================================================
+    // URL: /auth/google/callback
+    // Dipanggil oleh Google setelah user klik "Allow"
+    // URL ini HARUS sama dengan yang didaftarkan di Google Console!
+    // ================================================
+    Route::get('/auth/google/callback', 'callback')
+        ->name('auth.google.callback');
+});
+
+Route::post('midtrans/notification', [MidtransNotificationController::class, 'handle'])
     ->name('midtrans.notification');
-// Batasi 5 request per menit

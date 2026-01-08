@@ -30,37 +30,32 @@ class ProfileController extends Controller
     /**
      * Mengupdate informasi profil user.
      */
-    public function update(ProfileUpdateRequest $request): RedirectResponse
+    public function update(ProfileUpdateRequest $request)
     {
         $user = $request->user();
 
-        // 1. Handle Upload Avatar
-        // Cek apakah user mengupload file baru di input 'avatar'?
-        if ($request->hasFile('avatar')) {
-            // Upload file baru dan dapatkan path-nya (e.g., avatars/xxx.jpg)
-            $avatarPath = $this->uploadAvatar($request, $user);
+        // Ambil data yang sudah tervalidasi (kecuali avatar dulu)
+        $user->fill($request->safe()->except(['avatar']));
 
-            // Simpan path ke properti model, tapi belum di-save ke DB (masih di memory)
-            $user->avatar = $avatarPath;
-        }
-
-        // 2. Update Data Text (Nama, Email, dll)
-        // fill() mengisi atribut model dengan data validasi, tapi belum disimpan ke DB.
-        // Ini lebih aman daripada $user->update() langsung karena kita mau cek 'isDirty' dulu.
-        $user->fill($request->validated());
-
-        // 3. Cek Perubahan Email
-        // Jika email berubah, kita harus membatalkan status verifikasi email (isDirty cek perubahan di memory).
         if ($user->isDirty('email')) {
             $user->email_verified_at = null;
         }
 
-        // 4. Simpan ke Database
-        // Method save() baru benar-benar menjalankan query UPDATE ke database.
+        // Logika simpan foto
+        if ($request->hasFile('avatar')) {
+            // Hapus foto lama jika ada dan bukan default
+            if ($user->avatar && \Storage::disk('public')->exists($user->avatar)) {
+                \Storage::disk('public')->delete($user->avatar);
+            }
+
+            // Simpan foto baru ke folder 'avatars' di storage/app/public
+            $path = $request->file('avatar')->store('avatars', 'public');
+            $user->avatar = $path;
+        }
+
         $user->save();
 
-        return Redirect::route('profile.edit')
-            ->with('success', 'Profil berhasil diperbarui!');
+        return redirect()->route('profile.edit')->with('status', 'profile-updated');
     }
 
     /**
